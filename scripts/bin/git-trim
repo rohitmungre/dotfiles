@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# git-trim — Clean up local branches that have been merged or deleted on remote
+
+set -euo pipefail
+
+echo "🔀 Git Branch Cleanup"
+echo "─────────────────────"
+
+# Fetch and prune remote tracking branches
+echo ""
+echo "Fetching and pruning..."
+git fetch --all --prune
+
+# Find merged branches
+MERGED=$(git branch --merged main 2>/dev/null | grep -v "main\|master\|\*" || true)
+
+if [ -n "$MERGED" ]; then
+    echo ""
+    echo "Merged branches to remove:"
+    echo "$MERGED" | sed 's/^/  /'
+    echo ""
+    read -p "Delete these branches? [y/N] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "$MERGED" | xargs -n 1 git branch -d
+        echo "✓ Removed merged branches."
+    fi
+else
+    echo "No merged branches to clean up."
+fi
+
+# Find branches with deleted remotes
+GONE=$(git for-each-ref --format '%(refname:short) %(upstream:track)' refs/heads | awk '$2 == "[gone]" {print $1}' || true)
+
+if [ -n "$GONE" ]; then
+    echo ""
+    echo "Branches with deleted remotes:"
+    echo "$GONE" | sed 's/^/  /'
+    echo ""
+    read -p "Delete these branches? [y/N] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "$GONE" | xargs -n 1 git branch -D
+        echo "✓ Removed stale branches."
+    fi
+else
+    echo "No stale branches."
+fi
+
+echo ""
+echo "Remaining branches:"
+git branch -vv

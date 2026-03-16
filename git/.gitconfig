@@ -1,0 +1,110 @@
+[user]
+    name = Rohit Mungre
+    email = # Set in ~/.gitconfig.local
+
+[core]
+    editor = nvim
+    pager = delta
+    excludesFile = ~/.gitignore_global
+    autocrlf = input
+    whitespace = fix
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    default = current
+    autoSetupRemote = true
+    followTags = true
+
+[fetch]
+    prune = true
+    pruneTags = true
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+[merge]
+    conflictstyle = zdiff3
+    tool = nvim
+
+[mergetool "nvim"]
+    cmd = nvim -d $LOCAL $REMOTE $MERGED -c 'wincmd J'
+
+[diff]
+    algorithm = histogram
+    colorMoved = default
+    renames = copies
+
+# ── Delta (diff viewer) ──────────────────────
+[delta]
+    navigate = true
+    dark = true
+    side-by-side = true
+    line-numbers = true
+    syntax-theme = "Catppuccin Mocha"
+    file-style = bold yellow ul
+    file-decoration-style = none
+    hunk-header-decoration-style = cyan box ul
+    plus-style = "syntax #1a3a1a"
+    minus-style = "syntax #3a1a1a"
+    map-styles = "bold purple => syntax #2a1a3a, bold cyan => syntax #1a2a3a"
+    blame-palette = "#1e1e2e #181825 #11111b #313244 #45475a"
+
+[interactive]
+    diffFilter = delta --color-only
+
+# ── Aliases ──────────────────────────────────
+[alias]
+    # Shortcuts
+    s = status -sb
+    co = checkout
+    sw = switch
+    br = branch
+    ci = commit
+    ca = commit --amend --no-edit
+    cp = cherry-pick
+
+    # Logging
+    lg = log --oneline --graph --decorate -20
+    lga = log --oneline --graph --decorate --all
+    ll = log --pretty=format:'%C(yellow)%h%Creset %s %C(dim)— %an, %ar%Creset%C(auto)%d%Creset' -20
+    today = log --since=midnight --oneline --no-merges
+
+    # Diff
+    d = diff
+    ds = diff --staged
+    dw = diff --word-diff
+
+    # Undo
+    undo = reset --soft HEAD~1
+    unstage = reset HEAD --
+    discard = checkout --
+
+    # Cleanup
+    trim = !git branch --merged main | grep -v 'main\\|master\\|\\*' | xargs -n 1 git branch -d
+    gone = !git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D
+
+    # Info
+    aliases = config --get-regexp alias
+    contributors = shortlog --summary --numbered --no-merges
+    whoami = !echo "$(git config user.name) <$(git config user.email)>"
+
+    # Work in progress
+    wip = !git add -A && git commit -m "wip [skip ci]"
+    unwip = reset --soft HEAD~1
+
+# ── URL Shortcuts ────────────────────────────
+[url "git@github.com:"]
+    insteadOf = gh:
+
+[url "git@github.com:rohitmungre/"]
+    insteadOf = me:
+
+# ── Include local config ─────────────────────
+[include]
+    path = ~/.gitconfig.local

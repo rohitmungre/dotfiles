@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# cleanup-docker — Remove stopped containers, dangling images, unused volumes
+
+set -euo pipefail
+
+echo "🐳 Docker Cleanup"
+echo "─────────────────"
+
+echo ""
+echo "Stopped containers:"
+docker container prune -f
+
+echo ""
+echo "Dangling images:"
+docker image prune -f
+
+echo ""
+echo "Unused volumes:"
+docker volume prune -f
+
+echo ""
+echo "Build cache:"
+docker builder prune -f
+
+echo ""
+SPACE=$(docker system df --format '{{.Reclaimable}}' | head -1)
+echo "✓ Cleanup complete."
+docker system df

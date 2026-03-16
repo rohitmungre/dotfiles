@@ -1,0 +1,9 @@
+# Local overrides (machine-specific, not committed)
+*.local
+
+# OS
+.DS_Store
+
+# Editor
+*.swp
+*.swo

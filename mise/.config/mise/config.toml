@@ -1,0 +1,12 @@
+[tools]
+node = "lts"
+python = "3.12"
+go = "latest"
+terraform = "latest"
+
+[settings]
+experimental = true
+auto_install = true
+
+[env]
+NODE_OPTIONS = "--max-old-space-size=4096"

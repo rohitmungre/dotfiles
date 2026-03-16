@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# kctx — Interactive Kubernetes context switcher using fzf
+
+set -euo pipefail
+
+if ! command -v kubectl &>/dev/null; then
+    echo "kubectl not found" && exit 1
+fi
+
+CURRENT=$(kubectl config current-context 2>/dev/null || echo "none")
+
+CONTEXT=$(kubectl config get-contexts -o name | \
+    fzf --prompt="k8s context ($CURRENT) > " \
+        --header="Switch Kubernetes context" \
+        --height=40% \
+        --layout=reverse \
+        --border)
+
+if [ -n "$CONTEXT" ]; then
+    kubectl config use-context "$CONTEXT"
+    echo "✓ Switched to: $CONTEXT"
+fi
